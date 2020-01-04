@@ -92,5 +92,6 @@ func FindNamedMatches(regex *regexp.Regexp, str string) map[string]string {
 	for i, name := range match {
 		results[regex.SubexpNames()[i]] = name
 	}
+	fmt.Printf("shitee %s : %v\r\n", str, results)
 	return results
 }

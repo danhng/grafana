@@ -284,6 +284,7 @@ func (e *sqlQueryEndpoint) transformToTimeSeries(query *tsdb.Query, rows *core.R
 	seriesByQueryOrder := list.New()
 
 	columnNames, err := rows.Columns()
+	e.log.Warn("transformToTimeSeries", "columnNames", columnNames)
 	if err != nil {
 		return err
 	}
@@ -316,7 +317,7 @@ func (e *sqlQueryEndpoint) transformToTimeSeries(query *tsdb.Query, rows *core.R
 				columnType := columnTypes[i].DatabaseTypeName()
 
 				for _, mct := range e.metricColumnTypes {
-					if columnType == mct {
+					if columnType == mct && !thumbnailRegex.MatchString(col) {
 						metricIndex = i
 						continue
 					}
@@ -396,7 +397,12 @@ func (e *sqlQueryEndpoint) transformToTimeSeries(query *tsdb.Query, rows *core.R
 		thumbnailSeriesInfo := make(map[string][]string)
 		// map of metric to index column to thumbnal columns and type (img or video)
 		// #thumb#:<img/vid>:column names
+		fmt.Printf("Checking column names before checking thumbnail at this row %v \r\n", columnNames)
 		for i, col := range columnNames {
+			if i == timeIndex || i == metricIndex {
+				continue
+			}
+			e.log.Info("Checking thumbnail for col " + col)
 			if m := util.FindNamedMatches(thumbnailRegex, col); m["columnName"] != "" {
 				e.log.Info("Found matching thumbnail", "thumbnail", col)
 				if thumbVal, ok := values[i].(string); ok {
@@ -408,11 +414,10 @@ func (e *sqlQueryEndpoint) transformToTimeSeries(query *tsdb.Query, rows *core.R
 				}
 			}
 		}
-		e.log.Info("Rows", "thumbnailSeriesInfo", thumbnailSeriesInfo)
+		e.log.Info("Thumbnails Info", "thumbnailSeriesInfo", thumbnailSeriesInfo)
 
 		for i, col := range columnNames {
-			// thanhnd nope, fix here
-			if i == timeIndex || i == metricIndex {
+			if i == timeIndex || i == metricIndex || thumbnailRegex.MatchString(col) {
 				continue
 			}
 
@@ -462,6 +467,11 @@ func (e *sqlQueryEndpoint) transformToTimeSeries(query *tsdb.Query, rows *core.R
 			// thanhnd: key point
 			series.Points = append(series.Points, tsdb.TimePoint{value, null.FloatFrom(timestamp)})
 
+			fmt.Printf("thumbnailSeriesInfo of %s: %v\r\n", col, thumbnailSeriesInfo)
+			if _, ok := thumbnailSeriesInfo[col]; ok {
+				series.PointThumbnails = append(series.PointThumbnails, tsdb.TimePointThumbnail{thumbnailSeriesInfo[col][0], thumbnailSeriesInfo[col][1]})
+			}
+			e.log.Debug("Series after "+strconv.Itoa(i), "series", series)
 			if setting.Env == setting.DEV {
 				e.log.Debug("Rows", "metric", metric, "time", timestamp, "value", value)
 			}

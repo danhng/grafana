@@ -36,9 +36,10 @@ type QueryResult struct {
 }
 
 type TimeSeries struct {
-	Name   string            `json:"name"`
-	Points TimeSeriesPoints  `json:"points"`
-	Tags   map[string]string `json:"tags,omitempty"`
+	Name            string              `json:"name"`
+	Points          TimeSeriesPoints    `json:"points"`
+	Tags            map[string]string   `json:"tags,omitempty"`
+	PointThumbnails TimeSeriesThumbnail `json:"pointThumbnails"`
 }
 
 type Table struct {
@@ -51,9 +52,14 @@ type TableColumn struct {
 }
 
 type RowValues []interface{}
+
 type TimePoint [2]null.Float
 type TimeSeriesPoints []TimePoint
 type TimeSeriesSlice []*TimeSeries
+
+// thanhnd [thumbnail, type of thumpnail] (1: img, 2: vid)
+type TimePointThumbnail [2]string
+type TimeSeriesThumbnail []TimePointThumbnail
 
 func NewQueryResult() *QueryResult {
 	return &QueryResult{
