@@ -23,6 +23,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"github.com/grafana/grafana/pkg/components/simplejson"
 	"github.com/grafana/grafana/pkg/models"
+	"github.com/grafana/grafana/pkg/util"
 )
 
 // SqlMacroEngine interpolates macros into sql. It takes in the Query to have access to query context and
@@ -271,6 +272,13 @@ func (e *sqlQueryEndpoint) transformToTable(query *tsdb.Query, rows *core.Rows, 
 	return nil
 }
 
+// thanhnd: declare the thumbnail regex
+var thumbnailRegex *regexp.Regexp
+
+func init() {
+	thumbnailRegex, _ = regexp.Compile("#thumb#:(?P<thumbType>img|vid):(?P<columnName>.+)")
+}
+
 func (e *sqlQueryEndpoint) transformToTimeSeries(query *tsdb.Query, rows *core.Rows, result *tsdb.QueryResult, tsdbQuery *tsdb.TsdbQuery) error {
 	pointsBySeries := make(map[string]*tsdb.TimeSeries)
 	seriesByQueryOrder := list.New()
@@ -383,7 +391,27 @@ func (e *sqlQueryEndpoint) transformToTimeSeries(query *tsdb.Query, rows *core.R
 			}
 		}
 
+		// thanhnd: map col -> thumbnal info (array[2]))
+		// detect thumbnails column and index
+		thumbnailSeriesInfo := make(map[string][]string)
+		// map of metric to index column to thumbnal columns and type (img or video)
+		// #thumb#:<img/vid>:column names
 		for i, col := range columnNames {
+			if m := util.FindNamedMatches(thumbnailRegex, col); m["columnName"] != "" {
+				e.log.Info("Found matching thumbnail", "thumbnail", col)
+				if thumbVal, ok := values[i].(string); ok {
+					thumbColumnName := m["columnName"]
+					thumbType := m["thumbType"]
+					thumbnailSeriesInfo[thumbColumnName] = []string{thumbType, thumbVal}
+				} else {
+					e.log.Warn("Thumbnail value not of type string", "thumbnail value", values[i])
+				}
+			}
+		}
+		e.log.Info("Rows", "thumbnailSeriesInfo", thumbnailSeriesInfo)
+
+		for i, col := range columnNames {
+			// thanhnd nope, fix here
 			if i == timeIndex || i == metricIndex {
 				continue
 			}
@@ -398,6 +426,7 @@ func (e *sqlQueryEndpoint) transformToTimeSeries(query *tsdb.Query, rows *core.R
 				metric = metricPrefixValue + " " + col
 			}
 
+			// thanhnd: Get the CORRET series by metric (metric col (prefix) + column name)
 			series, exist := pointsBySeries[metric]
 			if !exist {
 				series = &tsdb.TimeSeries{Name: metric}
@@ -430,6 +459,7 @@ func (e *sqlQueryEndpoint) transformToTimeSeries(query *tsdb.Query, rows *core.R
 				}
 			}
 
+			// thanhnd: key point
 			series.Points = append(series.Points, tsdb.TimePoint{value, null.FloatFrom(timestamp)})
 
 			if setting.Env == setting.DEV {
