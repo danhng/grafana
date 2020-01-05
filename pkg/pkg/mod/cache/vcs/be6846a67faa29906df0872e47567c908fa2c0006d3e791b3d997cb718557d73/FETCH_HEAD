@@ -1,0 +1,11 @@
+511b54897591b10c42e98096f5a22e09acc54f59		branch 'docker-update-go-version' of https://github.com/securego/gosec
+850e5f047a839fcc8df86602094ccc822ccc900a		branch 'gcmurphy-patch-1' of https://github.com/securego/gosec
+806c1d081f5149dbdb4077850a532afafea27ac3		branch 'issue/153' of https://github.com/securego/gosec
+79fbf3af8d832ff2d2e098055c4b366bad172bce		branch 'master' of https://github.com/securego/gosec
+6130cf6feca73b61084b81114f1fe1947ed418f6		branch 'renovate/all' of https://github.com/securego/gosec
+5fb530cda357c16175f2c049577d2030de735b28		tag '1.0.0' of https://github.com/securego/gosec
+e4ba96adc310ea1fe64f43af8e26dd076361b57c		tag '1.1.0' of https://github.com/securego/gosec
+2695567487c0f23a8f152b9740571d9a0f08f243		tag '1.2.0' of https://github.com/securego/gosec
+62b5195dd9d28bddfa7c4921bbd6ff84ebbb0ecb		tag '1.3.0' of https://github.com/securego/gosec
+29cec138dcc94f347e6d41550a5223571dc7d6cf		tag '2.0.0' of https://github.com/securego/gosec
+28c1128b733663b49bf16953bc7005e887d7a8bf		tag 'v2.1.0' of https://github.com/securego/gosec

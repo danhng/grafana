@@ -61,9 +61,16 @@ function convertTableToDataFrame(table: TableData): DataFrame {
 function convertTimeSeriesToDataFrame(timeSeries: TimeSeries): DataFrame {
   const times: number[] = [];
   const values: TimeSeriesValue[] = [];
+  const thumbnailTypes: string[] = [];
+  const thumbnails: string[] = [];
   for (const point of timeSeries.datapoints) {
     values.push(point[0]);
     times.push(point[1] as number);
+  }
+
+  for (const thumbs of timeSeries.datapointThumbnails) {
+    thumbnailTypes.push(thumbs[0]);
+    thumbnails.push(thumbs[1]);
   }
 
   const fields = [
@@ -81,6 +88,18 @@ function convertTimeSeriesToDataFrame(timeSeries: TimeSeries): DataFrame {
       type: FieldType.time,
       config: {},
       values: new ArrayVector<number>(times),
+    },
+    {
+      name: 'Thumbnail Type',
+      type: FieldType.thumbnail_type,
+      config: {},
+      values: new ArrayVector<string>(thumbnailTypes),
+    },
+    {
+      name: 'Thumbnail Value',
+      type: FieldType.thumbnail,
+      config: {},
+      values: new ArrayVector<string>(thumbnails),
     },
   ];
 

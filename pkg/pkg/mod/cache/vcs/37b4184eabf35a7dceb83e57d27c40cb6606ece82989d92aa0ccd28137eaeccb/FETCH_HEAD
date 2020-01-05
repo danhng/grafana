@@ -1,0 +1,3 @@
+687488c898ab673ee751943f7bcab53ce2371985		branch 'api-old' of https://github.com/golangci/gocyclo
+0a533e8fa43d6605069e94f455bf9d79d4b8ea8c		branch 'master' of https://github.com/golangci/gocyclo
+687488c898ab673ee751943f7bcab53ce2371985		tag 'api' of https://github.com/golangci/gocyclo

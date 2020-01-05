@@ -53,10 +53,12 @@ export interface TableData extends QueryResultBase {
 export type TimeSeriesValue = number | null;
 
 export type TimeSeriesPoints = TimeSeriesValue[][];
+export type TimeSeriesThumbnails = string[][];
 
 export interface TimeSeries extends QueryResultBase {
   target: string;
   datapoints: TimeSeriesPoints;
+  datapointThumbnails?: TimeSeriesThumbnails;
   unit?: string;
   tags?: Labels;
 }

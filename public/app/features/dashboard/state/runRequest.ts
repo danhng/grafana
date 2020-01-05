@@ -109,8 +109,8 @@ export function runRequest(datasource: DataSourceApi, request: DataQueryRequest)
       request.endTime = Date.now();
 
       state = processResponsePacket(packet, state);
-
-      return state.panelData;
+      const a = state.panelData;
+      return a;
     }),
     // handle errors
     catchError(err =>

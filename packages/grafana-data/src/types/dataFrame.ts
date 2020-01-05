@@ -13,6 +13,8 @@ export enum FieldType {
   string = 'string',
   boolean = 'boolean',
   other = 'other', // Object, Array, etc
+  thumbnail_type = 'thumbnail_type',
+  thumbnail = 'thumbnail',
 }
 
 /**
