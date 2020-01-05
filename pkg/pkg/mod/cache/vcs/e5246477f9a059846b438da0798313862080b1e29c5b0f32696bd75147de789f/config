@@ -1,7 +1,0 @@
-[core]
-	repositoryformatversion = 0
-	filemode = true
-	bare = true
-[remote "origin"]
-	url = https://github.com/phpdave11/gofpdi
-	fetch = +refs/heads/*:refs/remotes/origin/*
