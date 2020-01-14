@@ -68,9 +68,11 @@ function convertTimeSeriesToDataFrame(timeSeries: TimeSeries): DataFrame {
     times.push(point[1] as number);
   }
 
-  for (const thumbs of timeSeries.datapointThumbnails) {
-    thumbnailTypes.push(thumbs[0]);
-    thumbnails.push(thumbs[1]);
+  if (timeSeries.datapointThumbnails) {
+    for (const thumbs of timeSeries.datapointThumbnails) {
+      thumbnailTypes.push(thumbs[0]);
+      thumbnails.push(thumbs[1]);
+    }
   }
 
   const fields = [

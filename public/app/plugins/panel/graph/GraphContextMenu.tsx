@@ -58,5 +58,5 @@ export const GraphContextMenu: React.FC<GraphContextMenuProps> = ({
       }
     : null;
 
-  return <ContextMenu {...otherProps} items={itemsToRender} renderHeader={renderHeader} />;
+  return <ContextMenu {...otherProps} source={source} items={itemsToRender} renderHeader={renderHeader} />;
 };

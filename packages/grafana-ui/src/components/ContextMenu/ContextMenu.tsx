@@ -6,6 +6,8 @@ import { GrafanaTheme } from '@grafana/data';
 import { stylesFactory } from '../../themes/stylesFactory';
 import { Portal, List } from '../index';
 import { LinkTarget } from '@grafana/data';
+import ImageGallery from 'react-image-gallery';
+import { FlotDataPoint } from '../../../../../public/app/plugins/panel/graph/GraphContextMenuCtrl';
 
 export interface ContextMenuItem {
   label: string;
@@ -19,13 +21,16 @@ export interface ContextMenuItem {
 export interface ContextMenuGroup {
   label?: string;
   items: ContextMenuItem[];
+  source: FlotDataPoint | null;
 }
+
 export interface ContextMenuProps {
   x: number;
   y: number;
   onClose: () => void;
   items?: ContextMenuGroup[];
   renderHeader?: () => JSX.Element;
+  source?: FlotDataPoint | null;
 }
 
 const getContextMenuStyles = stylesFactory((theme: GrafanaTheme) => {
@@ -151,7 +156,7 @@ const getContextMenuStyles = stylesFactory((theme: GrafanaTheme) => {
   };
 });
 
-export const ContextMenu: React.FC<ContextMenuProps> = React.memo(({ x, y, onClose, items, renderHeader }) => {
+export const ContextMenu: React.FC<ContextMenuProps> = React.memo(({ x, y, onClose, items, renderHeader, source }) => {
   const theme = useContext(ThemeContext);
   const menuRef = useRef<HTMLDivElement>(null);
   const [positionStyles, setPositionStyles] = useState({});
@@ -169,7 +174,8 @@ export const ContextMenu: React.FC<ContextMenuProps> = React.memo(({ x, y, onClo
       setPositionStyles({
         position: 'fixed',
         left: collisions.right ? x - rect.width - OFFSET : x - OFFSET,
-        top: collisions.bottom ? y - rect.height - OFFSET : y + OFFSET,
+        // top: collisions.bottom ? y - rect.height - OFFSET : y + OFFSET,
+        top: y + OFFSET, // thanhnd with thumbnail, we always set it to downward
       });
     }
   }, [menuRef.current]);
@@ -190,7 +196,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = React.memo(({ x, y, onClo
           renderItem={(item, index) => {
             return (
               <>
-                <ContextMenuGroup group={item} onClick={onClose} />
+                <ContextMenuGroup source={source} group={item} onClick={onClose} />
               </>
             );
           }}
@@ -234,10 +240,13 @@ const ContextMenuItem: React.FC<ContextMenuItemProps> = React.memo(
 
 interface ContextMenuGroupProps {
   group: ContextMenuGroup;
-  onClick?: () => void; // Used with 'onClose'
+  onClick?: () => void; // Used with 'onClose',
+  source?: FlotDataPoint | null;
 }
 
-const ContextMenuGroup: React.FC<ContextMenuGroupProps> = ({ group, onClick }) => {
+const imagePrefixUrl = 'https://htaviet.s3-ap-southeast-1.amazonaws.com/bmt/passion-fruit/';
+
+const ContextMenuGroup: React.FC<ContextMenuGroupProps> = ({ group, onClick, source }) => {
   const theme = useContext(ThemeContext);
   const styles = getContextMenuStyles(theme);
 
@@ -245,6 +254,23 @@ const ContextMenuGroup: React.FC<ContextMenuGroupProps> = ({ group, onClick }) =
     return null;
   }
 
+  let items: any = [];
+  if (source) {
+    const d = new Date(0);
+    d.setUTCMilliseconds(source.datapoint[0]);
+    const date = d.toISOString().split('T')[0];
+    const urlPrefix = imagePrefixUrl + date + '/';
+
+    // todo call to s3 to get media
+    const pics = ['shutterstock_1096552103-1.jpg', 'electronicdesign_17456_iotfarming_promonew_0.png'];
+
+    items = pics.map(pic => {
+      return {
+        original: urlPrefix + pic,
+        thumbnail: urlPrefix + pic,
+      };
+    });
+  }
   return (
     <div>
       {group.label && <div className={styles.groupLabel}>{group.label}</div>}
@@ -271,6 +297,11 @@ const ContextMenuGroup: React.FC<ContextMenuGroupProps> = ({ group, onClick }) =
           );
         }}
       />
+      {items && items.length > 0 && (
+        <div>
+          <ImageGallery items={items} />
+        </div>
+      )}
     </div>
   );
 };
