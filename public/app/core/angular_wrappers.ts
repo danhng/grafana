@@ -102,6 +102,7 @@ export function registerAngularDirectives() {
   react2AngularDirective('graphContextMenu', GraphContextMenu, [
     'x',
     'y',
+    'photos',
     'items',
     ['onClose', { watchDepth: 'reference', wrapApply: true }],
     ['getContextMenuSource', { watchDepth: 'reference', wrapApply: true }],

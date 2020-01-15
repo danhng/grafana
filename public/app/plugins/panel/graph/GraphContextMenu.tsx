@@ -7,11 +7,13 @@ import { css } from 'emotion';
 type GraphContextMenuProps = ContextMenuProps & {
   getContextMenuSource: () => FlotDataPoint | null;
   formatSourceDate: (date: DateTimeInput, format?: string) => string;
+  photos?: any[] | null;
 };
 
 export const GraphContextMenu: React.FC<GraphContextMenuProps> = ({
   getContextMenuSource,
   formatSourceDate,
+  photos,
   items,
   ...otherProps
 }) => {
@@ -58,5 +60,7 @@ export const GraphContextMenu: React.FC<GraphContextMenuProps> = ({
       }
     : null;
 
-  return <ContextMenu {...otherProps} source={source} items={itemsToRender} renderHeader={renderHeader} />;
+  return (
+    <ContextMenu {...otherProps} source={source} photos={photos} items={itemsToRender} renderHeader={renderHeader} />
+  );
 };

@@ -12,6 +12,7 @@ const template = `
       onClose="ctrl.onContextMenuClose"
       getContextMenuSource="ctrl.contextMenuCtrl.getSource"
       formatSourceDate="ctrl.formatDate"
+      photos="ctrl.contextMenuCtrl.photos"
       x="ctrl.contextMenuCtrl.position.x"
       y="ctrl.contextMenuCtrl.position.y"
     ></graph-context-menu>

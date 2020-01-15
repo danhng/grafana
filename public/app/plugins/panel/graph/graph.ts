@@ -43,6 +43,7 @@ import { TimeSrv } from 'app/features/dashboard/services/TimeSrv';
 import { ContextSrv } from 'app/core/services/context_srv';
 import { getFieldLinksSupplier } from 'app/features/panel/panellinks/linkSuppliers';
 import { CoreEvents } from 'app/types';
+import { minioClient } from '@grafana/ui/src/utils/minio';
 
 const LegendWithThemeProvider = provideTheme(Legend);
 
@@ -280,13 +281,52 @@ class GraphElement {
           : undefined;
       }
 
-      this.scope.$apply(() => {
-        // Setting nearest CustomScrollbar element as a scroll context for graph context menu
-        this.contextMenu.setScrollContextElement(scrollContextElement);
-        this.contextMenu.setSource(contextMenuSourceItem);
-        this.contextMenu.setMenuItemsSupplier(this.getContextMenuItemsSupplier(pos, linksSupplier) as any);
-        this.contextMenu.toggleMenu(pos);
-      });
+      const imagePrefixUrl = 'https://htaviet-test.s3.amazonaws.com/';
+      let items: any[] = [];
+      if (contextMenuSourceItem) {
+        const d = new Date(0);
+        d.setUTCMilliseconds(contextMenuSourceItem.datapoint[0]);
+        const date = d.toISOString().split('T')[0];
+        const prefix = 'bmt/passion-fruit/';
+        // todo call to s3 to get media
+        const objectsStream = minioClient.listObjects('htaviet-test', prefix + date, true);
+        const self = this;
+        const pics: any[] = [];
+        objectsStream.on('data', function(obj) {
+          pics.push(obj.name);
+        });
+        console.log(imagePrefixUrl + prefix + date);
+        objectsStream.on('end', function() {
+          items = pics
+            .filter(pic => pic !== prefix + date + '/')
+            .map(pic => {
+              return {
+                original: imagePrefixUrl + pic,
+                thumbnail: imagePrefixUrl + pic,
+              };
+            });
+          console.log('shite');
+          console.log(pics);
+          console.log(items);
+          self.scope.$apply(() => {
+            // Setting nearest CustomScrollbar element as a scroll context for graph context menu
+            self.contextMenu.setScrollContextElement(scrollContextElement);
+            self.contextMenu.setSource(contextMenuSourceItem);
+            self.contextMenu.setMenuItemsSupplier(self.getContextMenuItemsSupplier(pos, linksSupplier) as any);
+            self.contextMenu.setPhotos(items);
+            self.contextMenu.toggleMenu(pos);
+          });
+        });
+      } else {
+        this.scope.$apply(() => {
+          // Setting nearest CustomScrollbar element as a scroll context for graph context menu
+          this.contextMenu.setScrollContextElement(scrollContextElement);
+          this.contextMenu.setSource(contextMenuSourceItem);
+          this.contextMenu.setMenuItemsSupplier(this.getContextMenuItemsSupplier(pos, linksSupplier) as any);
+          this.contextMenu.setPhotos(items);
+          this.contextMenu.toggleMenu(pos);
+        });
+      }
     }
   }
 

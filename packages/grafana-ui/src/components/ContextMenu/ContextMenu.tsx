@@ -8,7 +8,6 @@ import { Portal, List } from '../index';
 import { LinkTarget } from '@grafana/data';
 import ImageGallery from 'react-image-gallery';
 import { FlotDataPoint } from '../../../../../public/app/plugins/panel/graph/GraphContextMenuCtrl';
-import { listBuckets } from '../../utils/minio';
 
 export interface ContextMenuItem {
   label: string;
@@ -32,6 +31,7 @@ export interface ContextMenuProps {
   items?: ContextMenuGroup[];
   renderHeader?: () => JSX.Element;
   source?: FlotDataPoint | null;
+  photos?: any[] | null;
 }
 
 const getContextMenuStyles = stylesFactory((theme: GrafanaTheme) => {
@@ -157,55 +157,57 @@ const getContextMenuStyles = stylesFactory((theme: GrafanaTheme) => {
   };
 });
 
-export const ContextMenu: React.FC<ContextMenuProps> = React.memo(({ x, y, onClose, items, renderHeader, source }) => {
-  const theme = useContext(ThemeContext);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const [positionStyles, setPositionStyles] = useState({});
+export const ContextMenu: React.FC<ContextMenuProps> = React.memo(
+  ({ x, y, onClose, items, renderHeader, source, photos }) => {
+    const theme = useContext(ThemeContext);
+    const menuRef = useRef<HTMLDivElement>(null);
+    const [positionStyles, setPositionStyles] = useState({});
 
-  useLayoutEffect(() => {
-    const menuElement = menuRef.current;
-    if (menuElement) {
-      const rect = menuElement.getBoundingClientRect();
-      const OFFSET = 5;
-      const collisions = {
-        right: window.innerWidth < x + rect.width,
-        bottom: window.innerHeight < rect.bottom + rect.height + OFFSET,
-      };
+    useLayoutEffect(() => {
+      const menuElement = menuRef.current;
+      if (menuElement) {
+        const rect = menuElement.getBoundingClientRect();
+        const OFFSET = 5;
+        const collisions = {
+          right: window.innerWidth < x + rect.width,
+          bottom: window.innerHeight < rect.bottom + rect.height + OFFSET,
+        };
 
-      setPositionStyles({
-        position: 'fixed',
-        left: collisions.right ? x - rect.width - OFFSET : x - OFFSET,
-        // top: collisions.bottom ? y - rect.height - OFFSET : y + OFFSET,
-        top: y + OFFSET, // thanhnd with thumbnail, we always set it to downward
-      });
-    }
-  }, [menuRef.current]);
+        setPositionStyles({
+          position: 'fixed',
+          left: collisions.right ? x - rect.width - OFFSET : x - OFFSET,
+          // top: collisions.bottom ? y - rect.height - OFFSET : y + OFFSET,
+          top: y + OFFSET, // thanhnd with thumbnail, we always set it to downward
+        });
+      }
+    }, [menuRef.current]);
 
-  useClickAway(menuRef, () => {
-    if (onClose) {
-      onClose();
-    }
-  });
+    useClickAway(menuRef, () => {
+      if (onClose) {
+        onClose();
+      }
+    });
 
-  const styles = getContextMenuStyles(theme);
-  return (
-    <Portal>
-      <div ref={menuRef} style={positionStyles} className={styles.wrapper}>
-        {renderHeader && <div className={styles.header}>{renderHeader()}</div>}
-        <List
-          items={items || []}
-          renderItem={(item, index) => {
-            return (
-              <>
-                <ContextMenuGroup source={source} group={item} onClick={onClose} />
-              </>
-            );
-          }}
-        />
-      </div>
-    </Portal>
-  );
-});
+    const styles = getContextMenuStyles(theme);
+    return (
+      <Portal>
+        <div ref={menuRef} style={positionStyles} className={styles.wrapper}>
+          {renderHeader && <div className={styles.header}>{renderHeader()}</div>}
+          <List
+            items={items || []}
+            renderItem={(item, index) => {
+              return (
+                <>
+                  <ContextMenuGroup source={source} group={item} onClick={onClose} photos={photos} />
+                </>
+              );
+            }}
+          />
+        </div>
+      </Portal>
+    );
+  }
+);
 
 interface ContextMenuItemProps {
   label: string;
@@ -243,11 +245,10 @@ interface ContextMenuGroupProps {
   group: ContextMenuGroup;
   onClick?: () => void; // Used with 'onClose',
   source?: FlotDataPoint | null;
+  photos?: any[] | null;
 }
 
-const imagePrefixUrl = 'https://htaviet.s3-ap-southeast-1.amazonaws.com/bmt/passion-fruit/';
-
-const ContextMenuGroup: React.FC<ContextMenuGroupProps> = ({ group, onClick, source }) => {
+const ContextMenuGroup: React.FC<ContextMenuGroupProps> = ({ group, onClick, photos }) => {
   const theme = useContext(ThemeContext);
   const styles = getContextMenuStyles(theme);
 
@@ -255,25 +256,24 @@ const ContextMenuGroup: React.FC<ContextMenuGroupProps> = ({ group, onClick, sou
     return null;
   }
 
-  let items: any = [];
-  if (source) {
-    const d = new Date(0);
-    d.setUTCMilliseconds(source.datapoint[0]);
-    const date = d.toISOString().split('T')[0];
-    const urlPrefix = imagePrefixUrl + date + '/';
-
-    // todo call to s3 to get media
-    listBuckets();
-
-    const pics = ['shutterstock_1096552103-1.jpg', 'electronicdesign_17456_iotfarming_promonew_0.png'];
-
-    items = pics.map(pic => {
-      return {
-        original: urlPrefix + pic,
-        thumbnail: urlPrefix + pic,
-      };
-    });
-  }
+  // let items: any = [];
+  // if (source) {
+  //   const d = new Date(0);
+  //   d.setUTCMilliseconds(source.datapoint[0]);
+  //   const date = d.toISOString().split('T')[0];
+  //   const urlPrefix = imagePrefixUrl + date + '/';
+  //
+  //   // todo call to s3 to get media
+  //   const objectsStream = minioClient.listObjects('htaviet-test', 'bmt/passion-fruit/2020-01-05', true);
+  //   const pics = [];
+  //
+  //   items = pics.map(pic => {
+  //     return {
+  //       original: urlPrefix + pic,
+  //       thumbnail: urlPrefix + pic,
+  //     };
+  //   });
+  // }
   return (
     <div>
       {group.label && <div className={styles.groupLabel}>{group.label}</div>}
@@ -300,9 +300,9 @@ const ContextMenuGroup: React.FC<ContextMenuGroupProps> = ({ group, onClick, sou
           );
         }}
       />
-      {items && items.length > 0 && (
+      {photos && photos.length > 0 && (
         <div>
-          <ImageGallery items={items} />
+          <ImageGallery items={photos} />
         </div>
       )}
     </div>

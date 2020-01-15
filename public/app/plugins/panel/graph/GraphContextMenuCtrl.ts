@@ -18,6 +18,7 @@ export class GraphContextMenuCtrl {
     x: number;
     y: number;
   };
+  photos?: any[] | null;
 
   isVisible: boolean;
 
@@ -63,6 +64,14 @@ export class GraphContextMenuCtrl {
 
   setSource = (source: FlotDataPoint | null) => {
     this.source = source;
+  };
+
+  setPhotos = (photos?: any[] | null) => {
+    this.photos = photos;
+  };
+
+  getPhotos = () => {
+    return this.photos;
   };
 
   getSource = () => {
