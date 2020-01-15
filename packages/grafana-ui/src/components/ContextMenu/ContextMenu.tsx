@@ -8,6 +8,7 @@ import { Portal, List } from '../index';
 import { LinkTarget } from '@grafana/data';
 import ImageGallery from 'react-image-gallery';
 import { FlotDataPoint } from '../../../../../public/app/plugins/panel/graph/GraphContextMenuCtrl';
+import { listBuckets } from '../../utils/minio';
 
 export interface ContextMenuItem {
   label: string;
@@ -21,7 +22,7 @@ export interface ContextMenuItem {
 export interface ContextMenuGroup {
   label?: string;
   items: ContextMenuItem[];
-  source: FlotDataPoint | null;
+  source?: FlotDataPoint | null;
 }
 
 export interface ContextMenuProps {
@@ -262,6 +263,8 @@ const ContextMenuGroup: React.FC<ContextMenuGroupProps> = ({ group, onClick, sou
     const urlPrefix = imagePrefixUrl + date + '/';
 
     // todo call to s3 to get media
+    listBuckets();
+
     const pics = ['shutterstock_1096552103-1.jpg', 'electronicdesign_17456_iotfarming_promonew_0.png'];
 
     items = pics.map(pic => {
