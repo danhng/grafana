@@ -272,11 +272,11 @@ func (e *sqlQueryEndpoint) transformToTable(query *tsdb.Query, rows *core.Rows, 
 	return nil
 }
 
-// thanhnd: declare the thumbnail regex
-var thumbnailRegex *regexp.Regexp
+// thanhnd: declare the htaRegex regex
+var htaRegex *regexp.Regexp
 
 func init() {
-	thumbnailRegex, _ = regexp.Compile("#thumb#:(?P<thumbType>img|vid):(?P<columnName>.+)")
+	htaRegex, _ = regexp.Compile("hta:(?P<columnName>.+)")
 }
 
 func (e *sqlQueryEndpoint) transformToTimeSeries(query *tsdb.Query, rows *core.Rows, result *tsdb.QueryResult, tsdbQuery *tsdb.TsdbQuery) error {
@@ -317,7 +317,7 @@ func (e *sqlQueryEndpoint) transformToTimeSeries(query *tsdb.Query, rows *core.R
 				columnType := columnTypes[i].DatabaseTypeName()
 
 				for _, mct := range e.metricColumnTypes {
-					if columnType == mct && !thumbnailRegex.MatchString(col) {
+					if columnType == mct && !htaRegex.MatchString(col) {
 						metricIndex = i
 						continue
 					}
@@ -392,32 +392,30 @@ func (e *sqlQueryEndpoint) transformToTimeSeries(query *tsdb.Query, rows *core.R
 			}
 		}
 
-		// thanhnd: map col -> thumbnal info (array[2]))
-		// detect thumbnails column and index
-		thumbnailSeriesInfo := make(map[string][]string)
-		// map of metric to index column to thumbnal columns and type (img or video)
+		// thanhnd: map col -> thumbnal info (array[10]))
+		// detect htaRegex column and index
+		htaValues := make(map[string]string)
 		// #thumb#:<img/vid>:column names
-		fmt.Printf("Checking column names before checking thumbnail at this row %v \r\n", columnNames)
+		e.log.Debug("Checking column names before checking hta values at this row %v", "columnNames", columnNames)
 		for i, col := range columnNames {
 			if i == timeIndex || i == metricIndex {
 				continue
 			}
-			e.log.Info("Checking thumbnail for col " + col)
-			if m := util.FindNamedMatches(thumbnailRegex, col); m["columnName"] != "" {
-				e.log.Info("Found matching thumbnail", "thumbnail", col)
-				if thumbVal, ok := values[i].(string); ok {
-					thumbColumnName := m["columnName"]
-					thumbType := m["thumbType"]
-					thumbnailSeriesInfo[thumbColumnName] = []string{thumbType, thumbVal}
+			e.log.Debug("Checking hta values for col " + col)
+			if m := util.FindNamedMatches(htaRegex, col); m["columnName"] != "" {
+				e.log.Debug("Found matching htaValues", "htaValues", col)
+				if htaVal, ok := values[i].(string); ok {
+					htaColumnName := m["columnName"]
+					htaValues[htaColumnName] = htaVal
 				} else {
-					e.log.Warn("Thumbnail value not of type string", "thumbnail value", values[i])
+					e.log.Warn("htaVal not of type string", "htaVal", values[i])
 				}
 			}
 		}
-		e.log.Info("Thumbnails Info", "thumbnailSeriesInfo", thumbnailSeriesInfo)
+		e.log.Debug("htaVal after row access and scan", "htaValues", htaValues)
 
 		for i, col := range columnNames {
-			if i == timeIndex || i == metricIndex || thumbnailRegex.MatchString(col) {
+			if i == timeIndex || i == metricIndex || htaRegex.MatchString(col) {
 				continue
 			}
 
@@ -466,16 +464,13 @@ func (e *sqlQueryEndpoint) transformToTimeSeries(query *tsdb.Query, rows *core.R
 
 			// thanhnd: key point
 			series.Points = append(series.Points, tsdb.TimePoint{value, null.FloatFrom(timestamp)})
-
-			fmt.Printf("thumbnailSeriesInfo of %s: %v\r\n", col, thumbnailSeriesInfo)
-			if _, ok := thumbnailSeriesInfo[col]; ok {
-				series.PointThumbnails = append(series.PointThumbnails, tsdb.TimePointThumbnail{thumbnailSeriesInfo[col][0], thumbnailSeriesInfo[col][1]})
-			}
+			series.HtaValues = htaValues
 			e.log.Debug("Series after "+strconv.Itoa(i), "series", series)
 			if setting.Env == setting.DEV {
 				e.log.Debug("Rows", "metric", metric, "time", timestamp, "value", value)
 			}
 		}
+
 	}
 
 	for elem := seriesByQueryOrder.Front(); elem != nil; elem = elem.Next() {

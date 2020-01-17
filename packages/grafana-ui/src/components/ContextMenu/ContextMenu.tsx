@@ -175,9 +175,12 @@ export const ContextMenu: React.FC<ContextMenuProps> = React.memo(
 
         setPositionStyles({
           position: 'fixed',
-          left: collisions.right ? x - rect.width - OFFSET : x - OFFSET,
+          // left: collisions.right ? x - rect.width - OFFSET : x - OFFSET,
           // top: collisions.bottom ? y - rect.height - OFFSET : y + OFFSET,
-          top: y + OFFSET, // thanhnd with thumbnail, we always set it to downward
+          top: photos && photos.length > 0 ? '50%' : collisions.right ? x - rect.width - OFFSET : x - OFFSET,
+          left: photos && photos.length > 0 ? '50%' : collisions.bottom ? y - rect.height - OFFSET : y + OFFSET,
+          transform: photos && photos.length > 0 ? 'translate(-50%, -50%)' : '',
+          // top: y + OFFSET, // thanhnd with thumbnail, we always set it to downward
         });
       }
     }, [menuRef.current]);
@@ -256,24 +259,13 @@ const ContextMenuGroup: React.FC<ContextMenuGroupProps> = ({ group, onClick, pho
     return null;
   }
 
-  // let items: any = [];
-  // if (source) {
-  //   const d = new Date(0);
-  //   d.setUTCMilliseconds(source.datapoint[0]);
-  //   const date = d.toISOString().split('T')[0];
-  //   const urlPrefix = imagePrefixUrl + date + '/';
-  //
-  //   // todo call to s3 to get media
-  //   const objectsStream = minioClient.listObjects('htaviet-test', 'bmt/passion-fruit/2020-01-05', true);
-  //   const pics = [];
-  //
-  //   items = pics.map(pic => {
-  //     return {
-  //       original: urlPrefix + pic,
-  //       thumbnail: urlPrefix + pic,
-  //     };
+  // set size
+  // if (photos) {
+  //   photos.forEach(photo => {
+  //     photo.sizes = '(max-width: 600px) 480px, 800px';
   //   });
   // }
+
   return (
     <div>
       {group.label && <div className={styles.groupLabel}>{group.label}</div>}

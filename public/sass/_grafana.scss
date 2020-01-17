@@ -111,3 +111,22 @@
 @import 'components/view_states.scss';
 
 @import '~react-image-gallery/styles/scss/image-gallery.scss';
+
+.image-gallery {
+  width: 800px;
+  height: 600px;
+}
+
+.image-gallery-slide img {
+  width: 800px;
+  height: 600px;
+  object-fit: fill;
+  overflow: hidden;
+  object-position: center center;
+}
+
+.fullscreen .image-gallery-slide img {
+  width: 100%;
+  height: auto;
+  max-height: 100vh;
+}

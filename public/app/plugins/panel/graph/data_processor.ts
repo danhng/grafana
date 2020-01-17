@@ -27,27 +27,6 @@ export class DataProcessor {
         continue;
       }
 
-      let thumbnailIndex = -1;
-      let thumbnailTypeIndex = -1;
-      let foundThumbnail = false;
-      let foundThumbnailType = false;
-
-      for (let j = 0; j < series.fields.length; j++) {
-        const field = series.fields[j];
-        if (field.type === FieldType.thumbnail) {
-          thumbnailIndex = j;
-          foundThumbnail = true;
-          continue;
-        }
-        if (field.type === FieldType.thumbnail_type) {
-          thumbnailTypeIndex = j;
-          foundThumbnailType = true;
-        }
-        if (foundThumbnail && foundThumbnailType) {
-          break;
-        }
-      }
-
       const seriesName = series.name ? series.name : series.refId;
       for (let j = 0; j < series.fields.length; j++) {
         const field = series.fields[j];
@@ -62,15 +41,10 @@ export class DataProcessor {
         }
 
         const datapoints = [];
-        const datapointThumbnails = [];
         for (let r = 0; r < series.length; r++) {
           datapoints.push([field.values.get(r), timeField.values.get(r)]);
-          datapointThumbnails.push([
-            series.fields[thumbnailTypeIndex].values.get(r),
-            series.fields[thumbnailIndex].values.get(r),
-          ]);
         }
-        list.push(this.toTimeSeries(field, name, i, j, datapoints, list.length, range, datapointThumbnails));
+        list.push(this.toTimeSeries(field, name, i, j, datapoints, list.length, range, series.htaValues));
       }
     }
 
@@ -95,7 +69,7 @@ export class DataProcessor {
     datapoints: any[][],
     index: number,
     range?: TimeRange,
-    datapointThumbnails?: any[][]
+    htaValues?: {}
   ) {
     const colorIndex = index % colors.length;
     const color = this.panel.aliasColors[alias] || colors[colorIndex];
@@ -107,7 +81,7 @@ export class DataProcessor {
       unit: field.config ? field.config.unit : undefined,
       dataFrameIndex,
       fieldIndex,
-      datapointThumbnails: datapointThumbnails || [],
+      htaValues: htaValues || [],
     });
 
     if (datapoints && datapoints.length > 0 && range) {

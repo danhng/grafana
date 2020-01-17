@@ -13,8 +13,6 @@ export enum FieldType {
   string = 'string',
   boolean = 'boolean',
   other = 'other', // Object, Array, etc
-  thumbnail_type = 'thumbnail_type',
-  thumbnail = 'thumbnail',
 }
 
 /**
@@ -89,7 +87,7 @@ export interface Field<T = any, V = Vector<T>> {
 export interface DataFrame extends QueryResultBase {
   name?: string;
   fields: Field[]; // All fields of equal length
-
+  htaValues?: {};
   // The number of rows
   length: number;
 }

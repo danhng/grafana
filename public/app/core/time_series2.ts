@@ -116,11 +116,11 @@ export default class TimeSeries {
   transform: any;
   flotpairs: any;
   unit: any;
-  datapointThumbnails?: any;
+  htaValues?: any;
 
   constructor(opts: any) {
     this.datapoints = opts.datapoints;
-    this.datapointThumbnails = opts.datapointThumbnails;
+    this.htaValues = opts.htaValues;
     this.label = opts.alias;
     this.id = opts.alias;
     this.alias = opts.alias;

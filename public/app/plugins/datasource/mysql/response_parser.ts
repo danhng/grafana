@@ -17,7 +17,7 @@ export default class ResponseParser {
             target: series.name,
             datapoints: series.points,
             // thanhnd
-            datapointThumbnails: series.pointThumbnails,
+            htaValues: series.htaValues,
             refId: queryRes.refId,
             meta: queryRes.meta,
           });

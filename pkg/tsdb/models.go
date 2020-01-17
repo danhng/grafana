@@ -36,10 +36,10 @@ type QueryResult struct {
 }
 
 type TimeSeries struct {
-	Name            string              `json:"name"`
-	Points          TimeSeriesPoints    `json:"points"`
-	Tags            map[string]string   `json:"tags,omitempty"`
-	PointThumbnails TimeSeriesThumbnail `json:"pointThumbnails"`
+	Name      string            `json:"name"`
+	Points    TimeSeriesPoints  `json:"points"`
+	Tags      map[string]string `json:"tags,omitempty"`
+	HtaValues map[string]string `json:"htaValues"`
 }
 
 type Table struct {
@@ -57,9 +57,9 @@ type TimePoint [2]null.Float
 type TimeSeriesPoints []TimePoint
 type TimeSeriesSlice []*TimeSeries
 
-// thanhnd [thumbnail, type of thumpnail] (1: img, 2: vid)
-type TimePointThumbnail [2]string
-type TimeSeriesThumbnail []TimePointThumbnail
+// thanhnd all things that starts with
+type HtaValue string
+type TimeSeriesHtaValues map[string]string
 
 func NewQueryResult() *QueryResult {
 	return &QueryResult{

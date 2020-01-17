@@ -287,16 +287,17 @@ class GraphElement {
         const d = new Date(0);
         d.setUTCMilliseconds(contextMenuSourceItem.datapoint[0]);
         const date = d.toISOString().split('T')[0];
-        const prefix = 'bmt/passion-fruit/';
-        // todo call to s3 to get media
+        const prefix =
+          contextMenuSourceItem.series.htaValues['farm'] + '/' + contextMenuSourceItem.series.htaValues['fruit'] + '/';
+        // const prefix = 'bmt/passion-fruit/';
         const objectsStream = minioClient.listObjects('htaviet-test', prefix + date, true);
         const self = this;
         const pics: any[] = [];
-        objectsStream.on('data', function(obj) {
+        objectsStream.on('data', obj => {
           pics.push(obj.name);
         });
         console.log(imagePrefixUrl + prefix + date);
-        objectsStream.on('end', function() {
+        objectsStream.on('end', () => {
           items = pics
             .filter(pic => pic !== prefix + date + '/')
             .map(pic => {
@@ -305,8 +306,6 @@ class GraphElement {
                 thumbnail: imagePrefixUrl + pic,
               };
             });
-          console.log('shite');
-          console.log(pics);
           console.log(items);
           self.scope.$apply(() => {
             // Setting nearest CustomScrollbar element as a scroll context for graph context menu

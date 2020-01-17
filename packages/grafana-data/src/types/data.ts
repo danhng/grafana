@@ -58,7 +58,7 @@ export type TimeSeriesThumbnails = string[][];
 export interface TimeSeries extends QueryResultBase {
   target: string;
   datapoints: TimeSeriesPoints;
-  datapointThumbnails?: TimeSeriesThumbnails;
+  htaValues?: {};
   unit?: string;
   tags?: Labels;
 }

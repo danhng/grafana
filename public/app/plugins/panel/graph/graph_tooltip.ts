@@ -257,25 +257,12 @@ export default function GraphTooltip(this: any, elem: any, dashboard: any, scope
 
         series = seriesList[hoverInfo.index];
         value = sanitize(series.formatValue(hoverInfo.value));
-
-        const thumbType = sanitize(series.datapointThumbnails[hoverInfo.hoverIndex][0]);
-        const thumb = sanitize(series.datapointThumbnails[hoverInfo.hoverIndex][1]);
-
         const color = sanitize(hoverInfo.color);
         const label = sanitize(hoverInfo.label);
-
         seriesHtml +=
           '<div class="graph-tooltip-list-item ' + highlightClass + '"><div class="graph-tooltip-series-name">';
         seriesHtml += '<i class="fa fa-minus" style="color:' + color + ';"></i> ' + label + ':</div>';
         seriesHtml += '<div class="graph-tooltip-value">' + value + '</div></div>';
-        if (thumb && thumbType === 'img') {
-          seriesHtml += '<div class="graph-tooltip-value"><img src="' + thumb + '" alt="' + thumb + '"></div></div>';
-        } else if (thumb && thumbType === 'vid') {
-          seriesHtml +=
-            '<div class="graph-tooltip-value"><video width="640" height="480" controls autoplay><source src="' +
-            thumb +
-            '" type="video/mp4">Your browser does not support the video tag. </video></div></div>';
-        }
         plot.highlight(hoverInfo.index, hoverInfo.hoverIndex);
       }
 
