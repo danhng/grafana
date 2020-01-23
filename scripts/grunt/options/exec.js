@@ -20,6 +20,6 @@ module.exports = function(config, grunt) {
     },
     jest: 'yarn run jest-ci',
     webpack:
-      'node ./node_modules/webpack/bin/webpack.js --config scripts/webpack/webpack.prod.js',
+      'node ./node_modules/webpack/bin/webpack.js --config scripts/webpack/webpack.dev.js',
   };
 };

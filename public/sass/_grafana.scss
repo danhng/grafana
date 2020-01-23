@@ -113,13 +113,13 @@
 @import '~react-image-gallery/styles/scss/image-gallery.scss';
 
 .image-gallery {
-  width: 800px;
-  height: 600px;
+  width: 400px;
+  height: 300px;
 }
 
 .image-gallery-slide img {
-  width: 800px;
-  height: 600px;
+  width: 400px;
+  height: 300px;
   object-fit: fill;
   overflow: hidden;
   object-position: center center;
