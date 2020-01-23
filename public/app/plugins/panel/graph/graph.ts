@@ -281,7 +281,7 @@ class GraphElement {
           : undefined;
       }
 
-      const imagePrefixUrl = 'https://htaviet-test.s3.amazonaws.com/';
+      const imagePrefixUrl = 'http://27.72.88.195:7374/htaviet-test/';
       let items: any[] = [];
       if (contextMenuSourceItem) {
         const d = new Date(0);
