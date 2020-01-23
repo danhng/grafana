@@ -251,6 +251,26 @@ interface ContextMenuGroupProps {
   photos?: any[] | null;
 }
 
+const itemss = [
+  {
+    // thumbnail: `https://www.medicalnewstoday.com/content/images/articles/325/325466/man-walking-dog.jpg`,
+    // original: `https://www.medicalnewstoday.com/content/images/articles/325/325466/man-walking-dog.jpg`,
+    embedUrl: 'https://www.youtube.com/embed/4pSzhZ76GdM?autoplay=1&showinfo=0',
+    description: 'Render custom slides within the gallery',
+    renderItem: () => {
+      return (
+        <div className="video-wrapper">
+          <iframe
+            src="http://27.72.88.195:7374/htaviet-test/bmt/passion-fruit/2020-01-20/2134132408457893109.mp4"
+            frameBorder="0"
+            allowFullScreen
+          ></iframe>
+        </div>
+      );
+    },
+  },
+];
+
 const ContextMenuGroup: React.FC<ContextMenuGroupProps> = ({ group, onClick, photos }) => {
   const theme = useContext(ThemeContext);
   const styles = getContextMenuStyles(theme);
@@ -294,7 +314,8 @@ const ContextMenuGroup: React.FC<ContextMenuGroupProps> = ({ group, onClick, pho
       />
       {photos && photos.length > 0 && (
         <div>
-          <ImageGallery items={photos} />
+          {/* <ImageGallery items={photos} /> */}
+          <ImageGallery items={itemss} showPlayButton={false} />
         </div>
       )}
     </div>
