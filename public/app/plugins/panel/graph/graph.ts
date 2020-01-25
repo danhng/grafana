@@ -43,7 +43,7 @@ import { TimeSrv } from 'app/features/dashboard/services/TimeSrv';
 import { ContextSrv } from 'app/core/services/context_srv';
 import { getFieldLinksSupplier } from 'app/features/panel/panellinks/linkSuppliers';
 import { CoreEvents } from 'app/types';
-import { minioClient } from '@grafana/ui/src/utils/minio';
+import { minioClient, StorageConfig } from '@grafana/ui/src/utils/minio';
 
 const LegendWithThemeProvider = provideTheme(Legend);
 
@@ -281,7 +281,9 @@ class GraphElement {
           : undefined;
       }
 
-      const imagePrefixUrl = 'http://27.72.88.195:7374/htaviet-test/';
+      const imagePrefixUrl = StorageConfig.useSSL
+        ? 'https://'
+        : 'http://' + StorageConfig.endPoint + ':' + StorageConfig.port + '/' + StorageConfig.bucketName + '/';
       let items: any[] = [];
       if (contextMenuSourceItem) {
         const d = new Date(0);
@@ -289,8 +291,7 @@ class GraphElement {
         const date = d.toISOString().split('T')[0];
         const prefix =
           contextMenuSourceItem.series.htaValues['farm'] + '/' + contextMenuSourceItem.series.htaValues['fruit'] + '/';
-        // const prefix = 'bmt/passion-fruit/';
-        const objectsStream = minioClient.listObjects('htaviet-test', prefix + date, true);
+        const objectsStream = minioClient.listObjects(StorageConfig.bucketName, prefix + date, true);
         const self = this;
         const pics: any[] = [];
         objectsStream.on('data', obj => {
