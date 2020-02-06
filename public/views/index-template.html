@@ -236,21 +236,21 @@
       </div>
     </grafana-app>
 
-<!--    <script>-->
-<!--        window.grafanaBootData = {-->
-<!--          user: [[.User]],-->
-<!--          settings: [[.Settings]],-->
-<!--          navTree: [[.NavTree]]-->
-<!--        };-->
+    <script>
+        window.grafanaBootData = {
+          user: [[.User]],
+          settings: [[.Settings]],
+          navTree: [[.NavTree]]
+        };
 
-<!--      // In case the js files fails to load the code below will show an info message.-->
-<!--        window.onload = function() {-->
-<!--          var preloader = document.getElementsByClassName("preloader");-->
-<!--          if (preloader.length) {-->
-<!--            preloader[0].className = "preloader preloader&#45;&#45;done";-->
-<!--          }-->
-<!--        };-->
-<!--    </script>-->
+      // In case the js files fails to load the code below will show an info message.
+        window.onload = function() {
+          var preloader = document.getElementsByClassName("preloader");
+          if (preloader.length) {
+            preloader[0].className = "preloader preloader--done";
+          }
+        };
+    </script>
 
     [[if .GoogleTagManagerId]]
     <!-- Google Tag Manager -->
