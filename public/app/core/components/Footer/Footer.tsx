@@ -15,7 +15,7 @@ export const Footer: FC<Props> = React.memo(
         <div className="text-center">
           <ul>
             <li>
-              <a href="http://erp.htaviet.com:9397/" target="_blank">
+              <a href="http://erp.htaviet.com:7788/" target="_blank">
                 <i className="fa fa-support"></i>
                 ERP HtaViet
               </a>
