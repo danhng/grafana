@@ -281,9 +281,13 @@ class GraphElement {
           : undefined;
       }
 
-      const imagePrefixUrl = StorageConfig.useSSL
-        ? 'https://'
-        : 'http://' + StorageConfig.endPoint + ':' + StorageConfig.port + '/' + StorageConfig.bucketName + '/';
+      const imagePrefixUrl =
+        (StorageConfig.useSSL ? 'https://' : 'http://') +
+        StorageConfig.endPoint +
+        (!StorageConfig.port ? '' : ':' + StorageConfig.port) +
+        '/' +
+        StorageConfig.bucketName +
+        '/';
       let items: any[] = [];
       if (contextMenuSourceItem) {
         const d = new Date(0);

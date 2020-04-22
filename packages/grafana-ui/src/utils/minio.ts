@@ -1,9 +1,9 @@
 import { Client } from 'minio';
 
 export const StorageConfig = {
-  endPoint: '27.72.88.195',
-  port: 7374,
-  useSSL: false,
+  endPoint: 'store.htaviet.com',
+  port: 443,
+  useSSL: true,
   accessKey: 'minioadmin',
   secretKey: 'minioadmin',
   bucketName: 'htaviet-test',
